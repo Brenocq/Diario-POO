@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1027362004345",
+    "firebase_url": "https://diariopoo.firebaseio.com",
+    "project_id": "diariopoo",
+    "storage_bucket": "diariopoo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027362004345:android:7f14210d088df6b4a063a8",
+        "android_client_info": {
+          "package_name": "com.brenocq.diariopoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027362004345-g4e8immbm1gfpo27ntljh39l09a5o68j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.brenocq.diariopoo",
+            "certificate_hash": "2b544935db3bd7db7947e65d8f808c23ad9d6037"
+          }
+        },
+        {
+          "client_id": "1027362004345-5rmrmkvdtu5e74ivfp6qqf51pd762ou8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkJG-Jsamktep9VIXS0o-B2FazdNgxZmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027362004345-5rmrmkvdtu5e74ivfp6qqf51pd762ou8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
