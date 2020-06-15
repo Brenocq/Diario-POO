@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diariopoo/app/newDiaryPage.dart';
 import 'package:flutter/material.dart';
 import '../services/auth.dart';
 import 'page.dart';
@@ -32,30 +34,40 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          DiaryPage(
-            title: "Dia incrível!",
-            description:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-            day: "Hoje",
-          ),
-          DiaryPage(
-            title: "Ana finalmente falou comigo",
-            description:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-            day: "Hoje",
-          ),
-          DiaryPage(
-            title: "Amanha tem prova! Socorro",
-            description:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-            day: "Hoje",
-          ),
-        ],
+      body: Container(
+        padding: const EdgeInsets.all(10.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance
+              .collection('BS1gbhANS7ZjO2oPVSxULB5wwyw1')
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return new Text('Loading...');
+              default:
+                return new ListView(
+                  children:
+                      snapshot.data.documents.map((DocumentSnapshot document) {
+                    return new DiaryPage(
+                      title: document['title'],
+                      description: document['description'],
+                      day: "Hoje",
+                    );
+                  }).toList(),
+                );
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewDiaryPage()),
+          );
+        },
         tooltip: 'Escrever',
         child: Icon(Icons.add),
       ),
