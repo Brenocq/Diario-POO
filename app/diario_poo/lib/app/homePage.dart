@@ -38,55 +38,79 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('Página inicial'),
         actions: <Widget>[
-          FlatButton(
-            child: Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-              ),
+          PopupMenuButton<String>(
+            child: Icon(
+              Icons.more_vert,
+              color: Colors.white,
             ),
-            onPressed: _signOut,
+            onSelected: opcoesDeAcao,
+            itemBuilder: (BuildContext context){
+              return Opcoes.escolhas.map((String opcao){
+                return PopupMenuItem<String>(
+                  value: opcao,
+                  child: Text(opcao),
+                );
+              }).toList();
+            },
           ),
+          SizedBox(width: 10,)
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10.0),
-        child: FutureBuilder<List<dynamic>>(
-          future: getDiaryPages(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return new Text('Loading...');
-              default:
-                return ListView(
-                  children:
-                      snapshot.data.toList(),
-                );
-            }
-          },
-        ),
-      ),
+      body: getPaginas(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewDiaryPage()),
-          ).then((value) {
-            setState(() {
-
-            });
-          });
-        },
+        onPressed: telaNovaPagina,
         tooltip: 'Escrever',
         child: Icon(Icons.add),
       ),
     );
   }
+
+  Container getPaginas(){
+    return Container(
+      padding: const EdgeInsets.all(10.0),
+      child: FutureBuilder<List<dynamic>>(
+        future: getDiaryPages(),
+        builder:
+          (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+            if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return CircularProgressIndicator(); // TODO: colocar círculo no meio da tela
+              default:
+                return ListView(
+                  children:
+                    snapshot.data.toList(),
+                );
+            }
+          },
+        ),
+    );
+  }
+
+  void telaNovaPagina(){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NewDiaryPage()),
+    ).then((value) {
+      setState(() {});
+    });
+  }
+
+  void opcoesDeAcao(String opcao){
+    switch(opcao){
+      case Opcoes.sair:
+        _signOut();
+        print(opcao);
+        break;
+
+      case Opcoes.editar:
+        print(opcao);
+        break;
+    }
+  }
+
 
   Future<List<dynamic>> getDiaryPages() async {
     var firestore = Firestore.instance;
@@ -105,4 +129,14 @@ class _HomePageState extends State<HomePage> {
           )
     ).toList());
   }
+}
+
+class Opcoes{
+  static const String editar = 'Editar';
+  static const String sair = 'Sair';  
+  
+  static const List<String> escolhas = <String>[
+    editar,
+    sair,
+  ];
 }

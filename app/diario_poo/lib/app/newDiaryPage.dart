@@ -1,8 +1,8 @@
-import 'package:diariopoo/app/homePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 
 class NewDiaryPage extends StatefulWidget {
   @override
@@ -36,24 +36,27 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
           child: Column(
             children: <Widget>[
-              Text("Titulo"),
+              Text(
+                "Seu dia em 5 palavras!",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(hintText: 'Enter a search term'),
+                decoration: InputDecoration(hintText: 'Uma sensação? Um lugar?'),
               ),
               SizedBox(height: 10),
-              Text("Descricao"),
+              Text(
+                "Descricao",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               TextField(
                 controller: descController,
-                decoration: InputDecoration(hintText: 'Enter a search term'),
+                decoration: InputDecoration(hintText: 'O que aconteceu hoje?'),
               ),
               SizedBox(height: 10),
               RaisedButton(
                 onPressed: () {
                   sendPageToFirebase(context, titleController, descController);
-                  setState(() {
-                    HomePage();
-                  });
                 },
                 child: Text("Salvar"),
               )
