@@ -1,3 +1,4 @@
+import 'package:diariopoo/app/homePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,9 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
               RaisedButton(
                 onPressed: () {
                   sendPageToFirebase(context, titleController, descController);
+                  setState(() {
+                    HomePage();
+                  });
                 },
                 child: Text("Salvar"),
               )
@@ -76,11 +80,10 @@ Future<void> sendPageToFirebase(BuildContext context,
         .add({
           'title': title.text,
           'description': desc.text,
+          'creationDate': FieldValue.serverTimestamp(),
         })
         .then((result) => {
               Navigator.pop(context),
-              title.clear(),
-              desc.clear(),
             })
         .catchError((err) => {print("[ERROR]: $err")});
   } else {

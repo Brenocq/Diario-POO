@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1027362004345-om7t8lbthk9grg8kantmmj7bqjeiglpn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.brenocq.diariopoo",
+            "certificate_hash": "b46ae95f4670fccbcf0650c92a90a067fc5462e5"
+          }
+        },
+        {
           "client_id": "1027362004345-g4e8immbm1gfpo27ntljh39l09a5o68j.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

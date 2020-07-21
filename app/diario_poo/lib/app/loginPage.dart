@@ -25,7 +25,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Diario POO'),
+        title: Text('Diario'),
         elevation: 2.0,
       ),
       body: _buildContent(),
