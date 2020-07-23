@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diariopoo/services/Crud.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:diariopoo/app/newDiaryPage.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   String _userId;
+  var _paginasDoDiario;
 
   Future<void> _signOut() async {
     try {
@@ -34,6 +37,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState(){
+    var dados = Crud.obterDados(_userId);
+    setState(() {
+      _paginasDoDiario = dados;
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return Scaffold(
@@ -47,7 +59,7 @@ class _HomePageState extends State<HomePage> {
             ),
             onSelected: opcoesDeAcao,
             itemBuilder: (BuildContext context){
-              return Opcoes.escolhas.map((String opcao){
+              return _Opcoes.escolhas.map((String opcao){
                 return PopupMenuItem<String>(
                   value: opcao,
                   child: Text(opcao),
@@ -68,16 +80,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Container getPaginas(){
+
+    Stream<List<dynamic>> _paginas = Stream.fromFuture(getDiaryPages());
+
     return Container(
       padding: const EdgeInsets.all(10.0),
-      child: FutureBuilder<List<dynamic>>(
-        future: getDiaryPages(),
+      child: StreamBuilder<List<dynamic>>(
+        stream: _paginas,
         builder:
           (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
             if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return CircularProgressIndicator(); // TODO: colocar círculo no meio da tela
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               default:
                 return ListView(
                   children:
@@ -88,6 +105,7 @@ class _HomePageState extends State<HomePage> {
         ),
     );
   }
+
 
   void telaNovaPagina(){
     Navigator.push(
@@ -100,19 +118,51 @@ class _HomePageState extends State<HomePage> {
 
   void opcoesDeAcao(String opcao){
     switch(opcao){
-      case Opcoes.sair:
+      case _Opcoes.sair:
         _signOut();
         print(opcao);
         break;
 
-      case Opcoes.editar:
+      case _Opcoes.editar:
         print(opcao);
         break;
+
+      case _Opcoes.atualizar:
+        var _dados = Crud.obterSnap(_userId);
+        setState(() {
+          _paginasDoDiario = _dados;
+        });
     }
   }
 
+  Future<bool> olharNota(BuildContext context, DocumentSnapshot documento) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(documento['descricaoCurta'], style: TextStyle(fontSize: 20.0)),
+          content: SingleChildScrollView(
+              child: Text(documento['descricaoLonga'])),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Voltar'),
+              textColor: Colors.blue,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
+
+  void deletarNota(BuildContext context, querySnap, document){
+    Crud.deletaPagina(_userId, document.documentID);
+  }
 
   Future<List<dynamic>> getDiaryPages() async {
+
     var firestore = Firestore.instance;
 
     await setUserId();
@@ -126,6 +176,16 @@ class _HomePageState extends State<HomePage> {
             descricaoCurta: document['descricaoCurta'],
             descricaoLonga: document['descricaoLonga'],
             dataDeCriacao: document['dataDeCriacao'],
+            idDoUsuario: _userId,
+            idDaPagina: document.documentID,
+            olhar: () {
+              return olharNota(context, document);
+            },
+            deletar: () {
+              setState(() {
+                deletarNota(context, querySnap, document);
+              });
+            }
           );
         }
     ).toList();
@@ -134,12 +194,14 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class Opcoes{
+class _Opcoes{
   static const String editar = 'Editar';
-  static const String sair = 'Sair';  
+  static const String sair = 'Sair';
+  static const String atualizar = 'Atualizar';
   
   static const List<String> escolhas = <String>[
     editar,
+    atualizar,
     sair,
   ];
 }
