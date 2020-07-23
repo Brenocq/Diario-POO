@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await widget.auth.signOut();
     } catch (e) {
-      print(e.toString());
+      print('Erro na função _signOut: ' + e.toString());
     }
   }
 
@@ -118,16 +118,19 @@ class _HomePageState extends State<HomePage> {
     await setUserId();
 
     var querySnap = await firestore
-        .collection(_userId).orderBy('creationDate', descending: true).getDocuments();
+        .collection(_userId).orderBy('dataDeCriacao', descending: true).getDocuments();
 
-    return (querySnap.documents
-        .map((DocumentSnapshot document) =>
-          DiaryPage(
-            title: document['title'],
-            description: document['description'],
-            day: "Hoje",
-          )
-    ).toList());
+    var list = querySnap.documents
+        .map((DocumentSnapshot document){
+          return DiaryPage(
+            descricaoCurta: document['descricaoCurta'],
+            descricaoLonga: document['descricaoLonga'],
+            dataDeCriacao: document['dataDeCriacao'],
+          );
+        }
+    ).toList();
+
+    return list;
   }
 }
 

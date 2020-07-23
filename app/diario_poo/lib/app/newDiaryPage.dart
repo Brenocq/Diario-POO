@@ -11,15 +11,15 @@ class NewDiaryPage extends StatefulWidget {
 
 class _NewDiaryPageState extends State<NewDiaryPage> {
   // Stores the title data
-  final titleController = TextEditingController();
+  final descricaoCurtaController = TextEditingController();
   // Stores the description data
-  final descController = TextEditingController();
+  final descricaoLongaController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed
-    titleController.dispose();
-    descController.dispose();
+    descricaoCurtaController.dispose();
+    descricaoLongaController.dispose();
     super.dispose();
   }
 
@@ -41,7 +41,7 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: titleController,
+                controller: descricaoCurtaController,
                 decoration: InputDecoration(hintText: 'Uma sensação? Um lugar?'),
               ),
               SizedBox(height: 10),
@@ -50,13 +50,13 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: descController,
+                controller: descricaoLongaController,
                 decoration: InputDecoration(hintText: 'O que aconteceu hoje?'),
               ),
               SizedBox(height: 10),
               RaisedButton(
                 onPressed: () {
-                  sendPageToFirebase(context, titleController, descController);
+                  sendPageToFirebase(context, descricaoCurtaController, descricaoLongaController);
                 },
                 child: Text("Salvar"),
               )
@@ -69,21 +69,21 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
 }
 
 Future<void> sendPageToFirebase(BuildContext context,
-    TextEditingController title, TextEditingController desc) async {
-  print('title:${title.text}\ndesc:${desc.text}');
+    TextEditingController descricaoCurta, TextEditingController descricaoLonga) async {
+  print('descricaoCurta:${descricaoCurta.text}\ndescricaoLonga:${descricaoLonga.text}');
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseUser user = await auth.currentUser();
   final userid = user.uid;
 
   // Get firebase user
-  if (title.text.isNotEmpty && desc.text.isNotEmpty) {
+  if (descricaoCurta.text.isNotEmpty && descricaoLonga.text.isNotEmpty) {
     Firestore.instance
         .collection(userid)
         .add({
-          'title': title.text,
-          'description': desc.text,
-          'creationDate': FieldValue.serverTimestamp(),
+          'descricaoCurta': descricaoCurta.text,
+          'descricaoLonga': descricaoLonga.text,
+          'dataDeCriacao': FieldValue.serverTimestamp(),
         })
         .then((result) => {
               Navigator.pop(context),
