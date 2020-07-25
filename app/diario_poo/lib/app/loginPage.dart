@@ -25,33 +25,41 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Diario'),
+        title: Text('Diario', style: TextStyle(color: Color(0xffd89d62)),),
+        backgroundColor: Colors.orange[200],
         elevation: 2.0,
       ),
       body: _buildContent(),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Color(0xffffe4c7),
     );
   }
 
   Widget _buildContent() {
+
+    AssetImage logo = AssetImage('assets/images/fullres.png');
+
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          Image(image: logo, height: 200,),
           Text(
-            'Login',
+            'Digitário',
             textAlign: TextAlign.center,
             style: TextStyle(
+              color: Color(0xffd89d62),
+              fontFamily: 'Poppins',
               fontSize: 32.0,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 48.0),
           CustomButton(
-            text: "Login com google",
-            color: Colors.blue,
+            text: "Login",
+            color: Colors.orange[300],
+            borderRadius: 50,
             textColor: Colors.black87,
             onPressed: _signInWithGoogle,
           ),

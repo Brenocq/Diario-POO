@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Página inicial'),
+        backgroundColor: Colors.orange[400],
         actions: <Widget>[
           PopupMenuButton<String>(
             child: Icon(
@@ -69,10 +70,12 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: getPaginas(),
+      backgroundColor: Color(0xffffe4c7),
       floatingActionButton: FloatingActionButton(
         onPressed: telaNovaPagina,
         tooltip: 'Escrever',
         child: Icon(Icons.add),
+        backgroundColor: Colors.deepOrange[400],
       ),
     );
   }
@@ -161,6 +164,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.orange[50],
           title: Text(
             _horario + '\n\n' + (_emoji != null ? _emoji + ' ' : '') + documento['descricaoCurta'] + ' ' +
                 (_emoji != null ? _emoji + ' ' : ''),
@@ -170,7 +174,7 @@ class _HomePageState extends State<HomePage> {
           actions: <Widget>[
             FlatButton(
               child: Text('Voltar'),
-              textColor: Colors.blue,
+              textColor: Colors.deepOrange,
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -186,13 +190,14 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            backgroundColor: Colors.orange[50],
             title: Text('Editar nota', style: TextStyle(fontSize: 20.0)),
             content: SingleChildScrollView(
                 child: Text('Deseja editar essa nota?')),
             actions: <Widget>[
               FlatButton(
                 child: Text('Sim'),
-                textColor: Colors.blue,
+                textColor: Colors.amber[600],
                 onPressed: () {
                   Navigator.of(context).pop();
                   return telaPaginaDeEdicao(documento);
@@ -216,13 +221,14 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.orange[50],
           title: Text('Tem certeza que deseja excluir?', style: TextStyle(fontSize: 20.0)),
           content: SingleChildScrollView(
               child: Text('Essa nota será excluída permanentemente.')),
           actions: <Widget>[
             FlatButton(
               child: Text('Sim'),
-              textColor: Colors.blue,
+              textColor: Colors.amber[600],
               onPressed: () {
                 Crud.deletaPagina(_userId, documento.documentID);
                 Navigator.of(context).pop();
@@ -247,6 +253,7 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            backgroundColor: Colors.orange[50],
             title: Text('O que deseja fazer?', style: TextStyle(fontSize: 20.0)),
             content: SingleChildScrollView(
                 child: Text('Deseja excluir a nota ou editá-la?')),
@@ -255,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   FlatButton(
                     child: Text('Editar'),
-                    textColor: Colors.blue,
+                    textColor: Colors.amberAccent[700],
                     onPressed: () {
                       Navigator.of(context).pop();
                       return editarNota(context, documento);
@@ -269,13 +276,6 @@ class _HomePageState extends State<HomePage> {
                       return deletarNota(context, querySnap, documento);
                     },
                   ),
-                  FlatButton(
-                    child: Text('Nenhum dos dois'),
-                    textColor: Colors.amber[600],
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
                 ]
               )
             ]
@@ -347,6 +347,7 @@ class _HomePageState extends State<HomePage> {
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
+        color: Color(0xffc89d62),
       ),
     );
 
@@ -366,7 +367,10 @@ class _HomePageState extends State<HomePage> {
   Row _linhaComHorario(String horario){
     Text _texto = Text(
       horario,
-      style: TextStyle(fontWeight: FontWeight.bold),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Color(0xffe2a86b),
+      ),
     );
 
     return Row(

@@ -10,6 +10,7 @@ class DiaryApp extends StatelessWidget {
     return MaterialApp(
         title: 'Diario POO',
         theme: ThemeData(
+          fontFamily: 'Poppins',
           primarySwatch: Colors.blue,
         ),
         home: LandingPage(

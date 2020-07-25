@@ -23,6 +23,7 @@ class DiaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Color(0xfffff0d3),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 0),
         child: Row(

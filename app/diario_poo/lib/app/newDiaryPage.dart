@@ -46,10 +46,11 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.orange[400],
         title: Text('Adicionar página'),
         elevation: 2.0,
       ),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Color(0xffffe4c7),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -57,8 +58,10 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
             child: Column(
               children: <Widget>[
                 Text(
-                  "Seu dia em 5 palavras!",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  "O que chamou sua atenção hoje?",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextField(
                   controller: descricaoCurtaController,
@@ -67,14 +70,24 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "Descricao",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  "Agora em mais palavras",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
                 TextField(
                   controller: descricaoLongaController,
                   decoration: InputDecoration(hintText: 'O que aconteceu hoje?'),
                   maxLength: 256,
                   maxLines: null,
+                ),
+                Text(
+                  "E um emoji pra completar!",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
                 TextField(
                   controller: emojiController,
@@ -87,6 +100,7 @@ class _NewDiaryPageState extends State<NewDiaryPage> {
                     _sendPageToFirebase(context, descricaoCurtaController.text, descricaoLongaController.text,
                         emojiController.text, docId);
                   },
+                  color: Colors.amber[300],
                   child: Text("Salvar"),
                 )
               ],
