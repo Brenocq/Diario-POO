@@ -97,9 +97,11 @@ class _HomePageState extends State<HomePage> {
                   child: CircularProgressIndicator(),
                 );
               default:
-                return ListView(
-                  children:
-                    snapshot.data.toList(),
+                return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index){
+                    return snapshot.data.elementAt(index);
+                  }
                 );
             }
           },
@@ -241,6 +243,48 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<bool> editarOuDeletarNota(BuildContext context, querySnap, documento){
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('O que deseja fazer?', style: TextStyle(fontSize: 20.0)),
+            content: SingleChildScrollView(
+                child: Text('Deseja excluir a nota ou editá-la?')),
+            actions: <Widget>[
+              Row(
+                children: <Widget>[
+                  FlatButton(
+                    child: Text('Editar'),
+                    textColor: Colors.blue,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      return editarNota(context, documento);
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Excluir'),
+                    textColor: Colors.red,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      return deletarNota(context, querySnap, documento);
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Nenhum dos dois'),
+                    textColor: Colors.amber[600],
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ]
+              )
+            ]
+          );
+        }
+    );
+  }
+
   Future<List<dynamic>> getDiaryPages() async {
 
     var firestore = Firestore.instance;
@@ -248,21 +292,32 @@ class _HomePageState extends State<HomePage> {
     await setUserId();
 
     String _diaEMesDaPaginaAnterior = null;
+    String _horarioDaPaginaAnterior = null;
 
     var querySnap = await firestore
         .collection(_userId).orderBy('dataDeCriacao', descending: true).getDocuments();
 
     List<Widget> _lista = new List();
     querySnap.documents.forEach((DocumentSnapshot documento){
-      Text _texto = _data(documento);
-      DiaryPage _pagina = _diaryPage(documento, querySnap);
+      String _diaEMesString = _diaEMes(_extraiData(documento));
+      Row _diaEMesRow = _linhaComData(_diaEMesString);
 
-      if(_diaEMesDaPaginaAnterior != _texto.data){
-        _lista.add(_texto);
+      String _horarioString = _horario(_extraiData(documento));
+      Row _horarioRow = _linhaComHorario(_horarioString);
+
+      if(_diaEMesDaPaginaAnterior != _diaEMesString){
+        _lista.add(_diaEMesRow);
+        _lista.add(_horarioRow);
+
+      } else if(_horarioDaPaginaAnterior != _horarioString){
+        _lista.add(_horarioRow);
       }
+
+      DiaryPage _pagina = _diaryPage(documento, querySnap);
       _lista.add(_pagina);
 
-      _diaEMesDaPaginaAnterior = _diaEMes(_extraiData(documento)); // TODO: otimizar isso aqui pra que o _texto não seja produzido o tempo todo
+      _diaEMesDaPaginaAnterior = _diaEMesString;
+      _horarioDaPaginaAnterior = _horarioString;
     });
 
     return _lista;
@@ -279,20 +334,47 @@ class _HomePageState extends State<HomePage> {
       olhar: () {
         return olharNota(context, documento);
       },
-      deletar: () {
-        return deletarNota(context, snapshot, documento);
-      },
-      editar: (){
-        return editarNota(context, documento);
-      },
+      aoSegurar: () {
+        return editarOuDeletarNota(context, snapshot, documento);
+      }
     );
 
     return _pagina;
   }
 
-  Text _data(DocumentSnapshot documento){
-    DateTime _data = _extraiData(documento);
-    return Text(_diaEMes(_data));
+  Row _linhaComData(String data){
+    Text _texto = Text(
+      ' ' + data + ' ',
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+
+    Expanded _linha = Expanded(
+      child: Divider(),
+    );
+
+    return Row(
+      children: <Widget>[
+        _linha,
+        _texto,
+        _linha,
+      ],
+    );
+  }
+
+  Row _linhaComHorario(String horario){
+    Text _texto = Text(
+      horario,
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+
+    return Row(
+      children: [
+        _texto,
+      ],
+    );
   }
 
   DateTime _extraiData(DocumentSnapshot documento){
@@ -305,6 +387,11 @@ class _HomePageState extends State<HomePage> {
   String _diaEMes(DateTime data){
     if(data == null) return null;
     return data.day.toString() + '/' + data.month.toString();
+  }
+
+  String _horario(DateTime data){
+    if(data == null) return null;
+    return data.hour.toString() + 'h';
   }
 }
 
