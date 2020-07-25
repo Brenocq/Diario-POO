@@ -6,8 +6,14 @@ import 'package:flutter/foundation.dart';
 
 class DiaryPage extends StatelessWidget {
   DiaryPage(
-      {@required this.descricaoCurta, @required this.descricaoLonga, @required this.emoji, @required this.dataDeCriacao,
-        @required this.idDaPagina, @required this.idDoUsuario, @required this.olhar, @required this.aoSegurar})
+      {@required this.descricaoCurta,
+      @required this.descricaoLonga,
+      @required this.emoji,
+      @required this.dataDeCriacao,
+      @required this.idDaPagina,
+      @required this.idDoUsuario,
+      @required this.olhar,
+      @required this.aoSegurar})
       : assert(descricaoCurta != null);
 
   final String descricaoCurta;
@@ -29,7 +35,13 @@ class DiaryPage extends StatelessWidget {
         child: Row(
 //          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _Informacoes(descricaoCurta: descricaoCurta, descricaoLonga: descricaoLonga, emoji: emoji, olhar: olhar, aoSegurar: aoSegurar,),
+            _Informacoes(
+              descricaoCurta: descricaoCurta,
+              descricaoLonga: descricaoLonga,
+              emoji: emoji,
+              olhar: olhar,
+              aoSegurar: aoSegurar,
+            ),
           ],
         ),
       ),
@@ -37,10 +49,13 @@ class DiaryPage extends StatelessWidget {
   }
 }
 
-class _Informacoes extends StatelessWidget{
+class _Informacoes extends StatelessWidget {
   _Informacoes(
-      {@required this.descricaoCurta, @required this.descricaoLonga, @required this.emoji, @required this.olhar,
-        @required this.aoSegurar})
+      {@required this.descricaoCurta,
+      @required this.descricaoLonga,
+      @required this.emoji,
+      @required this.olhar,
+      @required this.aoSegurar})
       : assert(descricaoCurta != null);
 
   final String descricaoCurta;
@@ -57,10 +72,12 @@ class _Informacoes extends StatelessWidget{
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
-            leading: emoji.isNotEmpty ? Text(
-              emoji,
-              style: TextStyle(fontSize: 40),
-            ) : null,
+            leading: emoji != null && emoji.isEmpty
+                ? null
+                : Text(
+                    emoji != null ? emoji : "",
+                    style: TextStyle(fontSize: 40),
+                  ),
             title: Text(descricaoCurta),
             subtitle: Text(
               descricaoLonga,
@@ -74,4 +91,3 @@ class _Informacoes extends StatelessWidget{
     );
   }
 }
-
