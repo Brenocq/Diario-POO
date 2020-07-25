@@ -1,14 +1,13 @@
 //import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diariopoo/services/Crud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 class DiaryPage extends StatelessWidget {
   DiaryPage(
       {@required this.descricaoCurta, @required this.descricaoLonga, @required this.emoji, @required this.dataDeCriacao,
-        @required this.idDaPagina, @required this.idDoUsuario, @required this.olhar, @required this.deletar, @required this.editar})
+        @required this.idDaPagina, @required this.idDoUsuario, @required this.olhar, @required this.aoSegurar})
       : assert(descricaoCurta != null);
 
   final String descricaoCurta;
@@ -19,19 +18,18 @@ class DiaryPage extends StatelessWidget {
   final String idDoUsuario;
 
   final Function olhar;
-  final Function deletar;
-  final Function editar;
+  final Function aoSegurar;
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Color(0xfffff0d3),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 0),
         child: Row(
 //          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _Informacoes(descricaoCurta: descricaoCurta, descricaoLonga: descricaoLonga, emoji: emoji, olhar: olhar, editar: editar,),
-            _Butoes(idDoUsuario: idDoUsuario, idDaPagina: idDaPagina, deletar: deletar),
+            _Informacoes(descricaoCurta: descricaoCurta, descricaoLonga: descricaoLonga, emoji: emoji, olhar: olhar, aoSegurar: aoSegurar,),
           ],
         ),
       ),
@@ -42,7 +40,7 @@ class DiaryPage extends StatelessWidget {
 class _Informacoes extends StatelessWidget{
   _Informacoes(
       {@required this.descricaoCurta, @required this.descricaoLonga, @required this.emoji, @required this.olhar,
-        @required this.editar})
+        @required this.aoSegurar})
       : assert(descricaoCurta != null);
 
   final String descricaoCurta;
@@ -50,7 +48,7 @@ class _Informacoes extends StatelessWidget{
   final String emoji;
 
   final Function olhar;
-  final Function editar;
+  final Function aoSegurar;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +67,7 @@ class _Informacoes extends StatelessWidget{
               overflow: TextOverflow.ellipsis,
             ),
             onTap: olhar,
-            onLongPress: editar,
+            onLongPress: aoSegurar,
           )
         ],
       ),
@@ -77,32 +75,3 @@ class _Informacoes extends StatelessWidget{
   }
 }
 
-class _Butoes extends StatelessWidget{
-  _Butoes(
-  {@required this.idDoUsuario, @required this.idDaPagina, this.deletar}
-      );
-
-  final String idDoUsuario;
-  final String idDaPagina;
-
-  final Function deletar;
-
-  @override
-  Widget build(BuildContext context) {
-
-    Color corDosIcones = Colors.pinkAccent;
-
-    return Row(
-      children: <Widget>[
-        IconButton(
-          onPressed: deletar,
-          icon: Icon(
-            Icons.delete,
-            color: corDosIcones,
-          ),
-
-        )
-      ]
-    );
-  }
-}
