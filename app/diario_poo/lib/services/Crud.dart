@@ -17,17 +17,21 @@ class Crud{
   }
 
   static obterDados(String userId) async{
+    print(userId);
     return await _firestore.collection(userId)
         .orderBy('dataDeCriacao', descending: true)
         .getDocuments();
   }
 
-  // TODO: implementar update
-//  static void updatePage(String userId, String docId, ) async{
-//    try{
-//      _firestore.collection(userId).document(docId).updateData()
-//    } catch (e){
-//      print('Erro ao editar página de id ' + docId + ':' + e);
-//    }
-//  }
+  static void updatePage(String userId, String docId, dados) async{
+    try{
+      _firestore.collection(userId).document(docId).updateData({
+        'descricaoCurta': dados.descricaoCurta,
+        'descricaoLonga': dados.descricaoLonga,
+        'emoji': dados.emoji,
+      });
+    } catch (e){
+      print('Erro ao editar página de id ' + docId + ':' + e);
+    }
+  }
 }

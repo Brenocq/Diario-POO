@@ -38,7 +38,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState(){
-    var dados = Crud.obterDados(_userId);
+    setUserId();
+    var dados = Crud.obterDados(_userId); // TODO: consertar exceção: o id não está sendo atualizado a tempo.
     setState(() {
       _paginasDoDiario = dados;
     });
@@ -85,7 +86,7 @@ class _HomePageState extends State<HomePage> {
 
     return Container(
       padding: const EdgeInsets.all(10.0),
-      child: StreamBuilder<List<dynamic>>(
+      child:  StreamBuilder<List<dynamic>>(
         stream: _paginas,
         builder:
           (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -106,13 +107,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void telaPaginaDeEdicao(documento){
+    String descricaoCurta = documento['descricaoCurta'];
+    String descricaoLonga = documento['descricaoLonga'];
+    String emoji = documento['emoji'];
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NewDiaryPage(descricaoCurta, descricaoLonga, emoji, documento.documentID)),
+    ).then((value) {
+      try {
+        setState(() {});
+      } catch (e){
+        print('Ia bugar mas esse código salvou!');
+        initState();
+      }
+    });
+  }
 
   void telaNovaPagina(){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewDiaryPage()),
+      MaterialPageRoute(builder: (context) => NewDiaryPage(null, null, null, null)),
     ).then((value) {
-      setState(() {});
+      try {
+        setState(() {});
+      } catch (e){
+        print('Ia bugar mas esse código salvou!');
+        initState();
+      }
     });
   }
 
@@ -120,10 +143,6 @@ class _HomePageState extends State<HomePage> {
     switch(opcao){
       case _Opcoes.sair:
         _signOut();
-        print(opcao);
-        break;
-
-      case _Opcoes.editar:
         print(opcao);
         break;
 
@@ -136,11 +155,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<bool> olharNota(BuildContext context, DocumentSnapshot documento) async {
+    final String _emoji = documento['emoji'];
+
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(documento['descricaoCurta'], style: TextStyle(fontSize: 20.0)),
+          title: Text(
+            (_emoji != null ? _emoji + ' ' : '') + documento['descricaoCurta'] + ' ' + (_emoji != null ? _emoji + ' ' : ''),
+            style: TextStyle(fontSize: 20.0)),
           content: SingleChildScrollView(
               child: Text(documento['descricaoLonga'])),
           actions: <Widget>[
@@ -157,8 +180,65 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void deletarNota(BuildContext context, querySnap, document){
-    Crud.deletaPagina(_userId, document.documentID);
+  Future<bool> editarNota(BuildContext context, documento) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Editar nota', style: TextStyle(fontSize: 20.0)),
+            content: SingleChildScrollView(
+                child: Text('Deseja editar essa nota?')),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Sim'),
+                textColor: Colors.blue,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  return telaPaginaDeEdicao(documento);
+                },
+              ),
+              FlatButton(
+                child: Text('Não'),
+                textColor: Colors.red,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        }
+    );
+  }
+
+  Future<bool> deletarNota(BuildContext context, querySnap, documento){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Tem certeza que deseja excluir?', style: TextStyle(fontSize: 20.0)),
+          content: SingleChildScrollView(
+              child: Text('Essa nota será excluída permanentemente.')),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Sim'),
+              textColor: Colors.blue,
+              onPressed: () {
+                Crud.deletaPagina(_userId, documento.documentID);
+                Navigator.of(context).pop();
+                setState(() {});
+              },
+            ),
+            FlatButton(
+              child: Text('Não'),
+              textColor: Colors.red,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
   }
 
   Future<List<dynamic>> getDiaryPages() async {
@@ -167,40 +247,72 @@ class _HomePageState extends State<HomePage> {
 
     await setUserId();
 
+    String _diaEMesDaPaginaAnterior = null;
+
     var querySnap = await firestore
         .collection(_userId).orderBy('dataDeCriacao', descending: true).getDocuments();
 
-    var list = querySnap.documents
-        .map((DocumentSnapshot document){
-          return DiaryPage(
-            descricaoCurta: document['descricaoCurta'],
-            descricaoLonga: document['descricaoLonga'],
-            dataDeCriacao: document['dataDeCriacao'],
-            idDoUsuario: _userId,
-            idDaPagina: document.documentID,
-            olhar: () {
-              return olharNota(context, document);
-            },
-            deletar: () {
-              setState(() {
-                deletarNota(context, querySnap, document);
-              });
-            }
-          );
-        }
-    ).toList();
+    List<Widget> _lista = new List();
+    querySnap.documents.forEach((DocumentSnapshot documento){
+      Text _texto = _data(documento);
+      DiaryPage _pagina = _diaryPage(documento, querySnap);
 
-    return list;
+      if(_diaEMesDaPaginaAnterior != _texto.data){
+        _lista.add(_texto);
+      }
+      _lista.add(_pagina);
+
+      _diaEMesDaPaginaAnterior = _diaEMes(_extraiData(documento)); // TODO: otimizar isso aqui pra que o _texto não seja produzido o tempo todo
+    });
+
+    return _lista;
+  }
+
+  DiaryPage _diaryPage(DocumentSnapshot documento, QuerySnapshot snapshot){
+    DiaryPage _pagina = DiaryPage(
+      descricaoCurta: documento['descricaoCurta'],
+      descricaoLonga: documento['descricaoLonga'],
+      emoji: documento['emoji'],
+      dataDeCriacao: documento['dataDeCriacao'],
+      idDoUsuario: _userId,
+      idDaPagina: documento.documentID,
+      olhar: () {
+        return olharNota(context, documento);
+      },
+      deletar: () {
+        return deletarNota(context, snapshot, documento);
+      },
+      editar: (){
+        return editarNota(context, documento);
+      },
+    );
+
+    return _pagina;
+  }
+
+  Text _data(DocumentSnapshot documento){
+    DateTime _data = _extraiData(documento);
+    return Text(_diaEMes(_data));
+  }
+
+  DateTime _extraiData(DocumentSnapshot documento){
+    Timestamp _timeStamp = documento['dataDeCriacao'];
+    DateTime _dataDeCriacao = DateTime.fromMillisecondsSinceEpoch(_timeStamp.millisecondsSinceEpoch);
+
+    return _dataDeCriacao;
+  }
+
+  String _diaEMes(DateTime data){
+    if(data == null) return null;
+    return data.day.toString() + '/' + data.month.toString();
   }
 }
 
 class _Opcoes{
-  static const String editar = 'Editar';
   static const String sair = 'Sair';
   static const String atualizar = 'Atualizar';
   
   static const List<String> escolhas = <String>[
-    editar,
     atualizar,
     sair,
   ];
