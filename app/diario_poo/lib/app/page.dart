@@ -28,8 +28,7 @@ class DiaryPage extends StatelessWidget {
         child: Row(
 //          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _Informacoes(descricaoCurta: descricaoCurta, descricaoLonga: descricaoLonga, emoji: emoji, aoSegurar: aoSegurar,),
-            _Butoes(idDoUsuario: idDoUsuario, idDaPagina: idDaPagina),
+            _Informacoes(descricaoCurta: descricaoCurta, descricaoLonga: descricaoLonga, emoji: emoji, olhar: olhar, aoSegurar: aoSegurar,),
           ],
         ),
       ),
@@ -75,32 +74,3 @@ class _Informacoes extends StatelessWidget{
   }
 }
 
-class _Butoes extends StatelessWidget{
-  _Butoes(
-  {@required this.idDoUsuario, @required this.idDaPagina, this.deletar}
-      );
-
-  final String idDoUsuario;
-  final String idDaPagina;
-
-  final Function deletar;
-
-  @override
-  Widget build(BuildContext context) {
-
-    Color corDosIcones = Colors.pinkAccent;
-
-    return Row(
-      children: <Widget>[
-        IconButton(
-          onPressed: deletar,
-          icon: Icon(
-            Icons.delete,
-            color: corDosIcones,
-          ),
-
-        )
-      ]
-    );
-  }
-}

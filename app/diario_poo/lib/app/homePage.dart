@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   String _userId;
-  var _paginasDoDiario;
 
   Future<void> _signOut() async {
     try {
@@ -39,9 +38,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState(){
     setUserId();
-    var dados = Crud.obterDados(_userId); // TODO: consertar exceção: o id não está sendo atualizado a tempo.
     setState(() {
-      _paginasDoDiario = dados;
     });
     super.initState();
   }
@@ -149,9 +146,7 @@ class _HomePageState extends State<HomePage> {
         break;
 
       case _Opcoes.atualizar:
-        var _dados = Crud.obterSnap(_userId);
         setState(() {
-          _paginasDoDiario = _dados;
         });
     }
   }
@@ -159,12 +154,16 @@ class _HomePageState extends State<HomePage> {
   Future<bool> olharNota(BuildContext context, DocumentSnapshot documento) async {
     final String _emoji = documento['emoji'];
 
+    DateTime _tempo = _extraiData(documento);
+    final String _horario = _horasEMinutos(_tempo);
+
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            (_emoji != null ? _emoji + ' ' : '') + documento['descricaoCurta'] + ' ' + (_emoji != null ? _emoji + ' ' : ''),
+            _horario + '\n\n' + (_emoji != null ? _emoji + ' ' : '') + documento['descricaoCurta'] + ' ' +
+                (_emoji != null ? _emoji + ' ' : ''),
             style: TextStyle(fontSize: 20.0)),
           content: SingleChildScrollView(
               child: Text(documento['descricaoLonga'])),
@@ -291,8 +290,8 @@ class _HomePageState extends State<HomePage> {
 
     await setUserId();
 
-    String _diaEMesDaPaginaAnterior = null;
-    String _horarioDaPaginaAnterior = null;
+    String _diaEMesDaPaginaAnterior;
+    String _horarioDaPaginaAnterior;
 
     var querySnap = await firestore
         .collection(_userId).orderBy('dataDeCriacao', descending: true).getDocuments();
@@ -392,6 +391,16 @@ class _HomePageState extends State<HomePage> {
   String _horario(DateTime data){
     if(data == null) return null;
     return data.hour.toString() + 'h';
+  }
+
+  String _minutos(DateTime data){
+    if(data == null) return null;
+    return data.minute.toString() + 'min';
+  }
+
+  String _horasEMinutos(DateTime data){
+    if(data == null) return null;
+    return _horario(data) + _minutos(data);
   }
 }
 
