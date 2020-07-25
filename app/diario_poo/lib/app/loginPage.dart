@@ -25,7 +25,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Diario', style: TextStyle(color: Color(0xffd89d62)),),
+        title: Text('Digitário', style: TextStyle(color: Color(0xffd89d62)),),
         backgroundColor: Colors.orange[200],
         elevation: 2.0,
       ),
